@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		460629D9291BF62900E94788 /* MainConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 460629D8291BF62900E94788 /* MainConfig.swift */; };
 		46500A93291ADC0600FBBF07 /* CharacterListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46500A92291ADC0600FBBF07 /* CharacterListViewController.swift */; };
 		46500A99291ADF3E00FBBF07 /* Character.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46500A98291ADF3E00FBBF07 /* Character.swift */; };
 		46500A9C291ADF7700FBBF07 /* CharacterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46500A9B291ADF7700FBBF07 /* CharacterService.swift */; };
@@ -32,6 +33,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		460629D8291BF62900E94788 /* MainConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainConfig.swift; sourceTree = "<group>"; };
 		46500A92291ADC0600FBBF07 /* CharacterListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterListViewController.swift; sourceTree = "<group>"; };
 		46500A98291ADF3E00FBBF07 /* Character.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Character.swift; sourceTree = "<group>"; };
 		46500A9B291ADF7700FBBF07 /* CharacterService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterService.swift; sourceTree = "<group>"; };
@@ -67,6 +69,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		460629D6291BF61900E94788 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				460629D7291BF62200E94788 /* Config */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		460629D7291BF62200E94788 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				460629D8291BF62900E94788 /* MainConfig.swift */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
 		46500A8F291ADBE300FBBF07 /* Characters */ = {
 			isa = PBXGroup;
 			children = (
@@ -149,6 +167,7 @@
 		466298D2291AD87D005B04B1 /* RickAndMortyDatabase */ = {
 			isa = PBXGroup;
 			children = (
+				460629D6291BF61900E94788 /* Shared */,
 				46500A8F291ADBE300FBBF07 /* Characters */,
 				466298D3291AD87D005B04B1 /* AppDelegate.swift */,
 				466298D5291AD87D005B04B1 /* SceneDelegate.swift */,
@@ -266,6 +285,7 @@
 				46500A99291ADF3E00FBBF07 /* Character.swift in Sources */,
 				46500AA4291AE3D700FBBF07 /* CharacterListViewModel.swift in Sources */,
 				46500A9C291ADF7700FBBF07 /* CharacterService.swift in Sources */,
+				460629D9291BF62900E94788 /* MainConfig.swift in Sources */,
 				466298D4291AD87D005B04B1 /* AppDelegate.swift in Sources */,
 				46500AA8291B085F00FBBF07 /* CharacterListView.swift in Sources */,
 				466298D6291AD87D005B04B1 /* SceneDelegate.swift in Sources */,

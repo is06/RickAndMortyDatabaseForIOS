@@ -20,12 +20,18 @@ final class CharacterService: CharacterServiceProtocol {
     
     weak var delegate: CharacterServiceDelegate?
     
+    fileprivate struct CharacterResponse: Codable {
+        var results: [Character]
+    }
+    
     func getCharacters() {
-        let characters = [
-            Character(name: "Steve"),
-            Character(name: "Ronald"),
-            Character(name: "Tim"),
-        ]
-        self.delegate?.characterService(getCharactersDidFinishWith: characters)
+        guard let url = URL(string: "\(MainConfig.apiUrl)/character") else { return }
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data else { return }
+            if let response = try? JSONDecoder().decode(CharacterResponse.self, from: data) {   
+                self.delegate?.characterService(getCharactersDidFinishWith: response.results)
+            }
+        }
+        task.resume()
     }
 }

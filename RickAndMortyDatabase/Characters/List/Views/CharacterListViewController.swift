@@ -69,6 +69,9 @@ final class CharacterListViewController: UIViewController {
 extension CharacterListViewController: CharacterListViewModelDelegate {
     
     func characterListViewModel(getCharacterDidFinishWith characters: [Character]) {
-        self.characterListView.setCharacters(characters)
+        // Back to the main thread for updating UI
+        DispatchQueue.main.async { [weak self] in
+            self?.characterListView.setCharacters(characters)
+        }
     }
 }
