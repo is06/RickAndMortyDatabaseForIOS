@@ -28,6 +28,10 @@ final class CharacterListItemView: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: .default, reuseIdentifier: "characterCell")
         
+        self.preservesSuperviewLayoutMargins = false
+        self.layoutMargins = .zero
+        self.separatorInset = .zero
+        
         self.setupViews()
         self.setupConstraints()
     }
