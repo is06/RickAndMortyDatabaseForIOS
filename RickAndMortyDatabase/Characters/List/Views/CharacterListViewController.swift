@@ -9,18 +9,25 @@ import UIKit
 
 final class CharacterListViewController: UIViewController {
 
-    var viewModel: CharacterListViewModelProtocol?
+    private static let errorMessages: [CharacterListError : String] = [
+        .noCharacter: "characterList.error.noCharacter",
+        .networkError: "characterList.error.networkError",
+    ]
+    
+    private var viewModel: CharacterListViewModelProtocol?
     
     // MARK: - Views
     
-    let titleLabel: UILabel = {
+    private let errorLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "test"
+        label.text = "Error"
+        label.numberOfLines = 0
+        label.textAlignment = .center
         return label
     }()
     
-    let characterListView: CharacterListView = {
+    private let characterListView: CharacterListView = {
         let view = CharacterListView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
@@ -44,19 +51,25 @@ final class CharacterListViewController: UIViewController {
         super.viewDidLoad()
         self.view.backgroundColor = .white
         
-        self.viewModel?.getCharacters()
-        
         self.setupViews()
         self.setupConstraints()
+        
+        self.viewModel?.requestCharacters()
     }
     
     // MARK: - Layout
     
     private func setupViews() {
+        self.view.addSubview(self.errorLabel)
         self.view.addSubview(self.characterListView)
     }
     
     private func setupConstraints() {
+        self.setupListConstraints()
+        self.setupErrorConstraints()
+    }
+    
+    private func setupListConstraints() {
         NSLayoutConstraint.activate([
             self.characterListView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 8),
             self.characterListView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor, constant: 8),
@@ -64,14 +77,42 @@ final class CharacterListViewController: UIViewController {
             self.characterListView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -8),
         ])
     }
+    
+    private func setupErrorConstraints() {
+        NSLayoutConstraint.activate([
+            self.errorLabel.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            self.errorLabel.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            self.errorLabel.centerYAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.centerYAnchor),
+        ])
+    }
+    
+    // MARK: - Actions
+    
+    private func showCharacters(_ characters: [Character]) {
+        self.characterListView.setCharacters(characters)
+        self.characterListView.isHidden = false
+        self.errorLabel.isHidden = true
+    }
+    
+    private func showError(_ error: CharacterListError) {
+        guard let key = CharacterListViewController.errorMessages[error] else { return }
+        self.errorLabel.text = key.localized()
+        self.characterListView.isHidden = true
+        self.errorLabel.isHidden = false
+    }
 }
 
 extension CharacterListViewController: CharacterListViewModelDelegate {
     
-    func characterListViewModel(getCharacterDidFinishWith characters: [Character]) {
+    func characterListViewModel(requestCharacterDidFinishWith result: Result<[Character], CharacterListError>) {
         // Back to the main thread for updating UI
         DispatchQueue.main.async { [weak self] in
-            self?.characterListView.setCharacters(characters)
+            switch result {
+            case .success(let characters):
+                self?.showCharacters(characters)
+            case .failure(let error):
+                self?.showError(error)
+            }
         }
     }
 }

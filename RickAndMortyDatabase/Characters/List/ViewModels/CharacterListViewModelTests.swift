@@ -30,7 +30,7 @@ final class CharacterListViewModelTest: XCTestCase {
         viewModel.delegate = delegateSpy
         
         // WHEN
-        viewModel.getCharacters()
+        viewModel.requestCharacters()
         
         // THEN
         wait(for: [expectation], timeout: 0.5)

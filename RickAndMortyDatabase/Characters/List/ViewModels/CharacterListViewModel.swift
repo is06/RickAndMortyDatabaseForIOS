@@ -7,16 +7,21 @@
 
 import Foundation
 
+enum CharacterListError: Error {
+    case noCharacter
+    case networkError
+}
+
 protocol CharacterListViewModelProtocol {
     var delegate: CharacterListViewModelDelegate? { get set }
-    func getCharacters()
+    func requestCharacters()
 }
 
 protocol CharacterListViewModelDelegate: AnyObject {
-    func characterListViewModel(getCharacterDidFinishWith characters: [Character])
+    func characterListViewModel(requestCharacterDidFinishWith result: Result<[Character], CharacterListError>)
 }
 
-final class CharacterListViewModel: CharacterListViewModelProtocol, CharacterServiceDelegate {
+final class CharacterListViewModel: CharacterListViewModelProtocol {
     
     weak var delegate: CharacterListViewModelDelegate?
     
@@ -25,14 +30,25 @@ final class CharacterListViewModel: CharacterListViewModelProtocol, CharacterSer
     init(characterService: CharacterServiceProtocol = CharacterService()) {
         self.characterService = characterService
         self.characterService.delegate = self
-        self.getCharacters()
     }
     
-    func getCharacters() {
+    func requestCharacters() {
         self.characterService.getCharacters()
     }
+}
+
+extension CharacterListViewModel: CharacterServiceDelegate {
     
-    func characterService(getCharactersDidFinishWith characters: [Character]) {
-        self.delegate?.characterListViewModel(getCharacterDidFinishWith: characters)
+    func characterService(getCharactersDidFinishWith result: Result<[Character], ServiceError>) {
+        switch result {
+        case .success(let characters):
+            if (characters.count == 0) {
+                self.delegate?.characterListViewModel(requestCharacterDidFinishWith: .failure(.noCharacter))
+            } else {
+                self.delegate?.characterListViewModel(requestCharacterDidFinishWith: .success(characters))
+            }
+        case .failure(_):
+            self.delegate?.characterListViewModel(requestCharacterDidFinishWith: .failure(.networkError))
+        }
     }
 }
