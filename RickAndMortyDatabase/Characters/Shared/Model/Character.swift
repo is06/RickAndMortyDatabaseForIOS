@@ -9,4 +9,10 @@ import Foundation
 
 struct Character: Codable, Equatable {
     var name: String
+    var imageUrl: String
+    
+    enum CodingKeys: String, CodingKey {
+        case name
+        case imageUrl = "image"
+    }
 }

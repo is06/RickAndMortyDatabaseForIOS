@@ -77,11 +77,15 @@ extension CharacterListView: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let cell = self.tableView.dequeueReusableCell(withIdentifier: "characterCell") as? CharacterListItemView {
-            cell.nameLabel.text = characters?[indexPath.row].name
-            return cell
-        }
-        return UITableViewCell()
+        guard let cell = self.tableView.dequeueReusableCell(withIdentifier: "characterCell") as? CharacterListItemView else { return UITableViewCell() }
+        guard let character = characters?[indexPath.row] else { return UITableViewCell() }
+        
+        cell.nameLabel.text = character.name
+        
+        guard let url = URL(string: character.imageUrl) else { return UITableViewCell() }
+        cell.avatarView.loadFrom(url, size: CGSize(width: 48, height: 48))
+        
+        return cell
     }
 }
 
