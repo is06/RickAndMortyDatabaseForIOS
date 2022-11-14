@@ -2,7 +2,7 @@
 //  CharacterListViewModelTests.swift
 //  RickAndMortyDatabaseTests
 //
-//  Created by Thomas Noury  on 09/11/2022.
+//  Created by Thomas Noury on 09/11/2022.
 //
 
 import XCTest
@@ -10,24 +10,57 @@ import XCTest
 
 final class CharacterListViewModelTest: XCTestCase {
     
-    func testGetCharacterShouldCallDelegate() {
-        let expectation = XCTestExpectation(description: "getCharacter delegate should be called with expected Characters")
-        
+    func testRequestCharactersShouldCallDelegateWithSuccess() {
         // GIVEN
-        let characterServiceMock = CharacterServiceMock(mockedCharacters: [
-            Character(name: "Steve"),
-            Character(name: "Ronald"),
-            Character(name: "Tim"),
-        ])
+        let characterServiceMock = CharacterServiceMock(mockedResult: .success([
+            Character(name: "Steve", imageUrl: "https://test.img"),
+            Character(name: "Ronald", imageUrl: "https://test.img"),
+            Character(name: "Tim", imageUrl: "https://test.img"),
+        ]))
         let viewModel = CharacterListViewModel(characterService: characterServiceMock)
         characterServiceMock.delegate = viewModel
         
-        let delegateSpy = DelegateSpy(expectation: expectation, expectedCharacters: [
-            Character(name: "Steve"),
-            Character(name: "Ronald"),
-            Character(name: "Tim"),
-        ])
-        viewModel.delegate = delegateSpy
+        let expectation = XCTestExpectation(description: "requestCharacters delegate should be called with success and expected characters")
+        let delegateObject = DelegateObject(expectation: expectation, expectedResult: .success([
+            Character(name: "Steve", imageUrl: "https://test.img"),
+            Character(name: "Ronald", imageUrl: "https://test.img"),
+            Character(name: "Tim", imageUrl: "https://test.img"),
+        ]))
+        viewModel.delegate = delegateObject
+        
+        // WHEN
+        viewModel.requestCharacters()
+        
+        // THEN
+        wait(for: [expectation], timeout: 0.5)
+    }
+    
+    func testRequestCharactersShouldCallDelegateWithFailureNoCharacter() {
+        // GIVEN
+        let characterServiceMock = CharacterServiceMock(mockedResult: .success([]))
+        let viewModel = CharacterListViewModel(characterService: characterServiceMock)
+        characterServiceMock.delegate = viewModel
+        
+        let expectation = XCTestExpectation(description: "requestCharacters delegate should be called with failure result noCharacter")
+        let delegateObject = DelegateObject(expectation: expectation, expectedResult: .failure(.noCharacter))
+        viewModel.delegate = delegateObject
+        
+        // WHEN
+        viewModel.requestCharacters()
+        
+        // THEN
+        wait(for: [expectation], timeout: 0.5)
+    }
+    
+    func testRequestCharactersShouldCallDelegateWithFailureServiceError() {
+        // GIVEN
+        let characterServiceMock = CharacterServiceMock(mockedResult: .failure(.decodingError))
+        let viewModel = CharacterListViewModel(characterService: characterServiceMock)
+        characterServiceMock.delegate = viewModel
+        
+        let expectation = XCTestExpectation(description: "requestCharacters delegate should be called with failure result noCharacter")
+        let delegateObject = DelegateObject(expectation: expectation, expectedResult: .failure(.serviceError))
+        viewModel.delegate = delegateObject
         
         // WHEN
         viewModel.requestCharacters()
@@ -41,29 +74,30 @@ fileprivate final class CharacterServiceMock: CharacterServiceProtocol {
     
     var delegate: CharacterServiceDelegate?
     
-    private let mockedCharacters: [Character]
+    private let mockedResult: Result<[Character], ServiceError>
     
-    init(mockedCharacters: [Character]) {
-        self.mockedCharacters = mockedCharacters
+    init(mockedResult: Result<[Character], ServiceError>) {
+        self.mockedResult = mockedResult
     }
     
-    func getCharacters() {
-        delegate?.characterService(getCharactersDidFinishWith: self.mockedCharacters)
+    func requestCharacters() {
+        delegate?.characterService(requestCharactersDidFinishWith: mockedResult)
     }
 }
 
-fileprivate final class DelegateSpy: CharacterListViewModelDelegate {
+fileprivate final class DelegateObject: CharacterListViewModelDelegate {
     
     private let expectation: XCTestExpectation
-    private let excpectedCharacters: [Character]
+    private let expectedResult: Result<[Character], CharacterListError>
     
-    init(expectation: XCTestExpectation, expectedCharacters: [Character]) {
+    init(expectation: XCTestExpectation, expectedResult: Result<[Character], CharacterListError>) {
         self.expectation = expectation
-        self.excpectedCharacters = expectedCharacters
+        self.expectedResult = expectedResult
     }
     
-    func characterListViewModel(getCharacterDidFinishWith characters: [RickAndMortyDatabase.Character]) {
-        if (self.excpectedCharacters == characters) {
+    func characterListViewModel(requestCharacterDidFinishWith result: Result<[Character], CharacterListError>) {
+        
+        if result == self.expectedResult {
             return self.expectation.fulfill()
         }
         XCTFail("Characters from service are different from expected characters")

@@ -2,7 +2,7 @@
 //  MainConfig.swift
 //  RickAndMortyDatabase
 //
-//  Created by Thomas Noury  on 08/11/2022.
+//  Created by Thomas Noury on 08/11/2022.
 //
 
 struct MainConfig {

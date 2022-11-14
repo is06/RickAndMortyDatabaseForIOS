@@ -7,56 +7,35 @@
 
 import Foundation
 
-enum ServiceError: Error {
-    case urlFormatError
-    case transportError
-    case decodingError
-    case requestError(Int)
-}
-
 protocol CharacterServiceProtocol {
     var delegate: CharacterServiceDelegate? { get set }
-    func getCharacters()
+    func requestCharacters()
 }
 
 protocol CharacterServiceDelegate: AnyObject {
-    func characterService(getCharactersDidFinishWith result: Result<[Character], ServiceError>)
+    func characterService(requestCharactersDidFinishWith result: Result<[Character], ServiceError>)
 }
 
-final class CharacterService: CharacterServiceProtocol {
+final class CharacterService: NetworkService, CharacterServiceProtocol {
     
     weak var delegate: CharacterServiceDelegate?
     
-    fileprivate struct CharacterResponse: Codable {
+    init() {
+        super.init()
+    }
+    
+    fileprivate struct CharacterResponse: Decodable {
         var results: [Character]
     }
     
-    func getCharacters() {
-        guard let url = URL(string: "\(MainConfig.apiUrl)/character") else {
-            self.delegate?.characterService(getCharactersDidFinishWith: .failure(.urlFormatError))
-            return
-        }
-        let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
-            guard let response = response as? HTTPURLResponse else {
-                self?.delegate?.characterService(getCharactersDidFinishWith: .failure(.transportError))
-                return
-            }
-            switch response.statusCode {
-            case 200:
-                guard let data = data else { return }
-                do {
-                    let responseData = try JSONDecoder().decode(CharacterResponse.self, from: data)
-                    self?.delegate?.characterService(getCharactersDidFinishWith: .success(responseData.results))
-                } catch {
-                    self?.delegate?.characterService(getCharactersDidFinishWith: .failure(.decodingError))
-                }
-            case 400...599:
-                self?.delegate?.characterService(getCharactersDidFinishWith: .failure(.requestError(response.statusCode)))
-            default:
-                // We do nothing for all other codes
-                break
+    func requestCharacters() {
+        self.makeGetRequest(url: "/character", responseType: CharacterResponse.self) { result in
+            switch result {
+            case .success(let response):
+                self.delegate?.characterService(requestCharactersDidFinishWith: .success(response.results))
+            case .failure(let error):
+                self.delegate?.characterService(requestCharactersDidFinishWith: .failure(error))
             }
         }
-        task.resume()
     }
 }

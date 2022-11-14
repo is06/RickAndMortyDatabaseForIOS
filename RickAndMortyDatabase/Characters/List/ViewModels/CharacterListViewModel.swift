@@ -9,7 +9,7 @@ import Foundation
 
 enum CharacterListError: Error {
     case noCharacter
-    case networkError
+    case serviceError
 }
 
 protocol CharacterListViewModelProtocol {
@@ -33,13 +33,13 @@ final class CharacterListViewModel: CharacterListViewModelProtocol {
     }
     
     func requestCharacters() {
-        self.characterService.getCharacters()
+        self.characterService.requestCharacters()
     }
 }
 
 extension CharacterListViewModel: CharacterServiceDelegate {
     
-    func characterService(getCharactersDidFinishWith result: Result<[Character], ServiceError>) {
+    func characterService(requestCharactersDidFinishWith result: Result<[Character], ServiceError>) {
         switch result {
         case .success(let characters):
             if (characters.count == 0) {
@@ -48,7 +48,7 @@ extension CharacterListViewModel: CharacterServiceDelegate {
                 self.delegate?.characterListViewModel(requestCharacterDidFinishWith: .success(characters))
             }
         case .failure(_):
-            self.delegate?.characterListViewModel(requestCharacterDidFinishWith: .failure(.networkError))
+            self.delegate?.characterListViewModel(requestCharacterDidFinishWith: .failure(.serviceError))
         }
     }
 }

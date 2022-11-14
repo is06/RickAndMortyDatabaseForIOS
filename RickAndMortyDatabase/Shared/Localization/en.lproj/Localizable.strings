@@ -5,5 +5,5 @@
   Created by Thomas Noury  on 09/11/2022.
 */
 
-"characterList.error.networkError" = "An error occurred while retrieving data, please try again later.";
-
+"characterList.error.serviceError" = "An error occurred while retrieving data, please try again later.";
+"characterList.error.noCharacter" = "No character available.";

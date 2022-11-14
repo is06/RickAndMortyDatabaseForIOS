@@ -2,7 +2,7 @@
 //  String+localization.swift
 //  RickAndMortyDatabase
 //
-//  Created by Thomas Noury  on 09/11/2022.
+//  Created by Thomas Noury on 09/11/2022.
 //
 
 import Foundation

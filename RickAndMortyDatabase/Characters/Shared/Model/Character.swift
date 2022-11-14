@@ -2,12 +2,12 @@
 //  Character.swift
 //  RickAndMortyDatabase
 //
-//  Created by Thomas Noury  on 08/11/2022.
+//  Created by Thomas Noury on 08/11/2022.
 //
 
 import Foundation
 
-struct Character: Codable, Equatable {
+struct Character: Decodable, Equatable {
     var name: String
     var imageUrl: String
     

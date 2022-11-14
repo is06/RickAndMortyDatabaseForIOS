@@ -11,7 +11,7 @@ final class CharacterListViewController: UIViewController {
 
     private static let errorMessages: [CharacterListError : String] = [
         .noCharacter: "characterList.error.noCharacter",
-        .networkError: "characterList.error.networkError",
+        .serviceError: "characterList.error.serviceError",
     ]
     
     private var viewModel: CharacterListViewModelProtocol?
@@ -41,6 +41,7 @@ final class CharacterListViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
         
         self.viewModel?.delegate = self
+        self.characterListView.delegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -114,5 +115,13 @@ extension CharacterListViewController: CharacterListViewModelDelegate {
                 self?.showError(error)
             }
         }
+    }
+}
+
+extension CharacterListViewController: CharacterListViewDelegate {
+    
+    func characterListView(didTap character: Character) {
+        let detailController = CharacterDetailViewController(character: character)
+        self.navigationController?.pushViewController(detailController, animated: true)
     }
 }

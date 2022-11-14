@@ -5,5 +5,5 @@
   Created by Thomas Noury  on 09/11/2022.
 */
 
-"characterList.error.networkError" = "Une erreur est survenue pendant la récupération des données, veuillez réessayer plus tard.";
-
+"characterList.error.serviceError" = "Une erreur est survenue pendant la récupération des données, veuillez réessayer plus tard.";
+"characterList.error.noCharacter" = "Aucun personnage disponible.";

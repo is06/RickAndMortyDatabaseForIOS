@@ -2,7 +2,7 @@
 //  UIImageView+FromUrl.swift
 //  RickAndMortyDatabase
 //
-//  Created by Thomas Noury  on 09/11/2022.
+//  Created by Thomas Noury on 09/11/2022.
 //
 
 import UIKit
@@ -17,7 +17,7 @@ extension UIImageView {
                     self?.image = image.resizeTo(size: size)
                 } else {
                     self?.image = image
-                }   
+                }
             }
         }
         task.resume()
