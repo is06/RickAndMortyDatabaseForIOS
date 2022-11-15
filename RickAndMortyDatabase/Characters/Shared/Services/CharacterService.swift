@@ -16,20 +16,18 @@ protocol CharacterServiceDelegate: AnyObject {
     func characterService(requestCharactersDidFinishWith result: Result<[Character], ServiceError>)
 }
 
-final class CharacterService: NetworkService, CharacterServiceProtocol {
+final class CharacterService: CharacterServiceProtocol {
     
     weak var delegate: CharacterServiceDelegate?
     
-    init() {
-        super.init()
-    }
+    private let networkService: NetworkServiceProtocol
     
-    fileprivate struct CharacterResponse: Decodable {
-        var results: [Character]
+    init(networkService: NetworkServiceProtocol = NetworkService.shared) {
+        self.networkService = networkService
     }
     
     func requestCharacters() {
-        self.makeGetRequest(url: "/character", responseType: CharacterResponse.self) { result in
+        self.networkService.makeGetRequest(url: "/character", responseType: CharacterResponse.self) { result in
             switch result {
             case .success(let response):
                 self.delegate?.characterService(requestCharactersDidFinishWith: .success(response.results))

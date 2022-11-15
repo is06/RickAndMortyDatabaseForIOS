@@ -7,20 +7,20 @@
 
 import Foundation
 
-enum ServiceError: Error {
+enum ServiceError: Error, Equatable {
     case urlFormatError
     case transportError
     case decodingError
     case requestError(Int)
 }
 
-typealias GetRequestCompletion<T: Decodable> = (_ result: Result<T, ServiceError>) -> Void
-
 protocol NetworkServiceProtocol {
-    func makeGetRequest<T: Decodable>(url: String, responseType: T.Type, _ completion: @escaping GetRequestCompletion<T>)
+    func makeGetRequest<T: Decodable>(url: String, responseType: T.Type, _ completion: @escaping (_ result: Result<T, ServiceError>) -> Void)
 }
 
 class NetworkService: NetworkServiceProtocol {
+    
+    static let shared: NetworkServiceProtocol = NetworkService(urlSession: URLSession.shared)
     
     private let urlSession: URLSession
     
@@ -28,7 +28,7 @@ class NetworkService: NetworkServiceProtocol {
         self.urlSession = urlSession
     }
     
-    internal func makeGetRequest<T: Decodable>(url: String, responseType: T.Type, _ completion: @escaping GetRequestCompletion<T>) {
+    func makeGetRequest<T: Decodable>(url: String, responseType: T.Type, _ completion: @escaping (_ result: Result<T, ServiceError>) -> Void) {
         guard let url = URL(string: "\(MainConfig.apiUrl)\(url)") else {
             completion(.failure(.urlFormatError))
             return
